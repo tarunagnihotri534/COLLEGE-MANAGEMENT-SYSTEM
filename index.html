@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CU Management System</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <i class="fa-solid fa-graduation-cap logo-icon"></i>
+                <div class="logo-text">
+                    <h1>CU CMS</h1>
+                    <span>Management</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" onclick="showSection('dashboard')">
+                    <i class="fa-solid fa-grid-2"></i> Dashboard
+                </button>
+                <button class="nav-item" onclick="showSection('students')">
+                    <i class="fa-solid fa-users"></i> Students
+                </button>
+                <button class="nav-item" onclick="showSection('courses')">
+                    <i class="fa-solid fa-book"></i> Courses
+                </button>
+            </nav>
+
+            <div class="user-profile">
+                <div class="profile-img">A</div>
+                <div class="profile-info">
+                    <h4>Admin User</h4>
+                    <span>Chandigarh Univ</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="top-header">
+                <div class="page-title">
+                    <h2 id="page-header">Dashboard</h2>
+                    <span id="current-date">October 25, 2023</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-primary" onclick="openAddModal()">
+                        <i class="fa-solid fa-plus"></i> Add Student
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon red-bg">
+                            <i class="fa-solid fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Total Students</h3>
+                            <h2 id="total-count-dash">0</h2>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon dark-bg">
+                            <i class="fa-solid fa-chart-pie"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3>Average CGPA</h3>
+                            <h2 id="avg-cgpa">0.0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="recent-adds">
+                    <h3>Recently Added</h3>
+                    <div class="student-table-container">
+                        <table class="student-table">
+                            <thead>
+                                <tr>
+                                    <th>Roll No</th>
+                                    <th>Name</th>
+                                    <th>Course IDs</th>
+                                    <th>CGPA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="recent-table-body">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Students List Section -->
+            <section id="students" class="content-section">
+                <div class="search-bar-area">
+                    <div class="search-input">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="start-search" placeholder="Search by name or roll no..."
+                            onkeyup="filterStudents()">
+                    </div>
+                    <div class="filter-group">
+                        <select id="course-filter" onchange="filterStudents()">
+                            <option value="">All Courses</option>
+                            <!-- Populated dynamically if needed -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="students-grid" id="students-grid">
+                    <!-- Student Cards Populated by JS -->
+                </div>
+            </section>
+
+            <!-- Courses Section -->
+            <section id="courses" class="content-section">
+                <div class="courses-header-area">
+                    <h3>Available Programs</h3>
+                    <p>Manage and view details of offered courses</p>
+                </div>
+                <div class="courses-grid" id="courses-grid">
+                    <!-- Populated by JS -->
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add/Edit Student Modal -->
+    <div class="modal-overlay" id="student-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modal-title">Add New Student</h3>
+                <button class="close-btn" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="student-form">
+                    <input type="hidden" id="edit-index" value="-1">
+                    <div class="form-group">
+                        <label>First Name</label>
+                        <input type="text" id="fname" required placeholder="e.g. Amit">
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name</label>
+                        <input type="text" id="lname" required placeholder="e.g. Mishra">
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number</label>
+                        <input type="number" id="roll" required placeholder="e.g. 101">
+                    </div>
+                    <div class="form-group">
+                        <label>CGPA</label>
+                        <input type="number" step="0.01" min="0" max="10" id="cgpa" required placeholder="e.g. 8.5">
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Registered Courses (Space separated IDs)</label>
+                        <input type="text" id="courses-input" placeholder="e.g. 101 102 103 104 105" required>
+                        <small>Enter 5 numeric course IDs separated by spaces</small>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn-text" onclick="closeModal()">Cancel</button>
+                        <button type="submit" class="btn-primary" id="save-btn">Save Student</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal">
+        <div class="modal small-modal">
+            <div class="modal-body text-center">
+                <div class="warning-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                <h3>Delete Student?</h3>
+                <p>Are you sure you want to delete this student? This action cannot be undone.</p>
+                <div class="form-actions center">
+                    <button class="btn-text" onclick="closeDeleteModal()">Cancel</button>
+                    <button class="btn-danger" id="confirm-delete-btn">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
