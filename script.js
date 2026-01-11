@@ -16,6 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
     updateDashboard();
     renderStudents();
     renderCourses();
+    updateDashboard();
+    renderStudents();
+    renderCourses();
+    populateCourseFilter();
     setupDate();
 });
 
@@ -53,7 +57,7 @@ studentForm.addEventListener('submit', (e) => {
 
     const fname = document.getElementById('fname').value;
     const lname = document.getElementById('lname').value;
-    const roll = parseInt(document.getElementById('roll').value);
+    const roll = document.getElementById('roll').value.trim(); // Keep as string
     const cgpa = parseFloat(document.getElementById('cgpa').value);
     const coursesStr = document.getElementById('courses-input').value;
     const courses = coursesStr.trim().split(/\s+/).map(Number).slice(0, 5); // Take first 5
@@ -68,8 +72,8 @@ studentForm.addEventListener('submit', (e) => {
 
     if (editIndex === -1) {
         // Add Mode
-        // Check Uniqueness
-        if (students.some(s => s.roll === roll)) {
+        // Check Uniqueness (compare as strings)
+        if (students.some(s => s.roll.toString() === roll)) {
             alert("Roll number already exists!");
             return;
         }
@@ -79,7 +83,7 @@ studentForm.addEventListener('submit', (e) => {
     } else {
         // Edit Mode
         // If roll changed, check uniqueness
-        if (students[editIndex].roll !== roll && students.some(s => s.roll === roll)) {
+        if (students[editIndex].roll.toString() !== roll && students.some(s => s.roll.toString() === roll)) {
             alert("Roll number already exists!");
             return;
         }
@@ -101,7 +105,7 @@ function deleteStudent(roll) {
 
 document.getElementById('confirm-delete-btn').addEventListener('click', () => {
     if (deleteTargetRoll !== null) {
-        students = students.filter(s => s.roll !== deleteTargetRoll);
+        students = students.filter(s => s.roll.toString() !== deleteTargetRoll.toString());
         saveData();
         updateDashboard();
         renderStudents();
@@ -110,7 +114,8 @@ document.getElementById('confirm-delete-btn').addEventListener('click', () => {
 });
 
 function editStudent(roll) {
-    const index = students.findIndex(s => s.roll === roll);
+    // Convert roll to string for comparison since we allow alphanumeric now
+    const index = students.findIndex(s => s.roll.toString() === roll.toString());
     if (index === -1) return;
 
     const s = students[index];
@@ -148,10 +153,10 @@ function renderStudents(filteredList = null) {
                 <strong>Courses:</strong> ${student.courses.join(', ')}
             </div>
             <div class="card-actions">
-                <button class="btn-card" onclick="editStudent(${student.roll})">
+                <button class="btn-card" onclick="editStudent('${student.roll}')">
                     <i class="fa-solid fa-pen"></i> Edit
                 </button>
-                <button class="btn-card delete" onclick="deleteStudent(${student.roll})">
+                <button class="btn-card delete" onclick="deleteStudent('${student.roll}')">
                     <i class="fa-solid fa-trash"></i> Delete
                 </button>
             </div>
@@ -225,6 +230,22 @@ function renderCourses() {
     });
 }
 
+function populateCourseFilter() {
+    const select = document.getElementById('course-filter');
+    if (!select) return;
+
+    // Keep the first option (All Courses)
+    select.innerHTML = '<option value="">All Courses</option>';
+
+    courseData.forEach(course => {
+        const option = document.createElement('option');
+        // Using title for display, and code for value
+        option.value = course.code;
+        option.textContent = `${course.title} (${course.code})`;
+        select.appendChild(option);
+    });
+}
+
 
 // Utility
 function saveData() {
@@ -248,6 +269,22 @@ function closeModal() {
 
 function closeDeleteModal() {
     document.getElementById('delete-modal').classList.remove('active');
+}
+
+function openAttendanceModal() {
+    document.getElementById('attendance-modal').classList.add('active');
+}
+
+function closeAttendanceModal() {
+    document.getElementById('attendance-modal').classList.remove('active');
+}
+
+function openDatesheetModal() {
+    document.getElementById('datesheet-modal').classList.add('active');
+}
+
+function closeDatesheetModal() {
+    document.getElementById('datesheet-modal').classList.remove('active');
 }
 
 function setupDate() {
