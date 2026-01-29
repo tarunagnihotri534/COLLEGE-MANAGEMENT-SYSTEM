@@ -745,3 +745,25 @@ small {
     color: var(--primary-red);
     background: #fff0f0;
 }
+
+/* Footer */
+.main-footer {
+    margin-top: 40px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+    text-align: center;
+    color: var(--text-light);
+    font-size: 14px;
+    padding-bottom: 8px;
+}
+
+.footer-content p {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    font-weight: 500;
+}
+
+.footer-content strong {
+    color: var(--dark-bg);
+    font-weight: 600;
+}
